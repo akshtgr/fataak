@@ -5,6 +5,7 @@ import 'package:provider/provider.dart';
 import 'package:carousel_slider/carousel_slider.dart';
 import 'package:badges/badges.dart' as badges;
 
+import '../providers/product_provider.dart'; // Import the new provider
 import '../models/product.dart';
 import '../providers/cart_provider.dart';
 import './cart_screen.dart';
@@ -17,24 +18,24 @@ class HomeScreen extends StatefulWidget {
 }
 
 class _HomeScreenState extends State<HomeScreen> {
-  // --- DUMMY DATA ---
-  // TODO: Replace with your actual product data and images
-  final List<Product> _products = [
-    Product(id: 'p1', name: 'Fresh Tomatoes', imagePath: 'assets/images/tomato.png', price: 50.0, stock: '1 kg'),
-    Product(id: 'p2', name: 'Organic Onions', imagePath: 'assets/images/onion.png', price: 40.0, stock: '1 kg'),
-    Product(id: 'p3', name: 'Crisp Potatoes', imagePath: 'assets/images/potato.png', price: 30.0, stock: '1 kg'),
-    Product(id: 'p4', name: 'Green Spinach', imagePath: 'assets/images/spinach.png', price: 25.0, stock: '500 gm'),
-  ];
+  @override
+  void initState() {
+    super.initState();
+    // Fetch products when the screen loads
+    Provider.of<ProductProvider>(context, listen: false).fetchProducts();
+  }
 
   final List<String> _bannerImages = [
     'assets/images/banner1.png',
     'assets/images/banner2.png',
     'assets/images/banner3.png',
   ];
-  // --------------------
 
   @override
   Widget build(BuildContext context) {
+    final productProvider = Provider.of<ProductProvider>(context);
+    final products = productProvider.products;
+
     return Scaffold(
       appBar: AppBar(
         title: const Text('Fataak'),
@@ -82,10 +83,8 @@ class _HomeScreenState extends State<HomeScreen> {
                         margin: const EdgeInsets.symmetric(horizontal: 5.0),
                         decoration: BoxDecoration(
                           borderRadius: BorderRadius.circular(8.0),
-                          // Dummy color if asset not found
                           color: Colors.grey[200],
                         ),
-                        // You can use Image.asset() here
                         child: ClipRRect(
                           borderRadius: BorderRadius.circular(8.0),
                           child: Image.asset(imagePath, fit: BoxFit.cover, errorBuilder: (context, error, stackTrace) {
@@ -108,14 +107,14 @@ class _HomeScreenState extends State<HomeScreen> {
               padding: const EdgeInsets.all(8.0),
               shrinkWrap: true,
               physics: const NeverScrollableScrollPhysics(),
-              itemCount: _products.length,
+              itemCount: products.length,
               gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
                 crossAxisCount: 2,
                 childAspectRatio: 3 / 4,
                 crossAxisSpacing: 8,
                 mainAxisSpacing: 8,
               ),
-              itemBuilder: (ctx, i) => ProductCard(product: _products[i]),
+              itemBuilder: (ctx, i) => ProductCard(product: products[i]),
             ),
           ],
         ),
@@ -124,7 +123,7 @@ class _HomeScreenState extends State<HomeScreen> {
   }
 }
 
-// Product Card Widget
+// --- Product Card Widget (Moved Outside) ---
 class ProductCard extends StatelessWidget {
   final Product product;
   const ProductCard({required this.product, super.key});
@@ -146,7 +145,7 @@ class ProductCard extends StatelessWidget {
           children: [
             Expanded(
               child: Center(
-                child: Image.asset(
+                child: Image.network( // Use Image.network for firebase images
                   product.imagePath,
                   fit: BoxFit.contain,
                   errorBuilder: (context, error, stackTrace) {

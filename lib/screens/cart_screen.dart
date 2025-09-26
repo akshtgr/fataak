@@ -60,7 +60,7 @@ class _CartScreenState extends State<CartScreen> {
     // ------------------------------------
 
     // --- Replace with your WhatsApp number ---
-    const String whatsappNumber = "+910000000000"; // IMPORTANT: Use your actual number
+    const String whatsappNumber = "+918770783359"; // IMPORTANT: Use your actual number
     // -----------------------------------------
 
     final Uri whatsappUrl = Uri.parse(
