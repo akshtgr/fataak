@@ -1,7 +1,7 @@
 class Product {
   final String id;
   final String name;
-  final String imageUrl;
+  final String imageUrl; // This was missing
   final double marketPrice;
   final double ourPrice;
   final int stock;
@@ -16,7 +16,7 @@ class Product {
   Product({
     required this.id,
     required this.name,
-    required this.imageUrl,
+    required this.imageUrl, // Add this
     required this.marketPrice,
     required this.ourPrice,
     required this.stock,
@@ -33,7 +33,7 @@ class Product {
     return Product(
       id: id,
       name: json['name'],
-      imageUrl: json['image_url'],
+      imageUrl: json['image_url'], // And add this line
       marketPrice: json['market_price'].toDouble(),
       ourPrice: json['our_price'].toDouble(),
       stock: json['stock'],
