@@ -31,6 +31,7 @@ class _CartScreenState extends State<CartScreen> {
 
   void _placeOrder(CartProvider cart) async {
     if (cart.items.isEmpty) {
+      if (!mounted) return;
       ScaffoldMessenger.of(context).showSnackBar(
         const SnackBar(content: Text('Your cart is empty!')),
       );
@@ -39,6 +40,7 @@ class _CartScreenState extends State<CartScreen> {
 
     final address = _addressController.text.trim();
     if (address.isEmpty) {
+      if (!mounted) return;
       ScaffoldMessenger.of(context).showSnackBar(
         const SnackBar(content: Text('Please enter a delivery address.')),
       );
@@ -75,6 +77,7 @@ class _CartScreenState extends State<CartScreen> {
         throw 'Could not launch $whatsappUrl';
       }
     } catch (e) {
+      if (!mounted) return;
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(content: Text('Could not open WhatsApp. Error: $e')),
       );
@@ -108,9 +111,9 @@ class _CartScreenState extends State<CartScreen> {
                   elevation: 0,
                   margin: const EdgeInsets.symmetric(vertical: 4),
                   child: ListTile(
-                    leading: Image.asset(product.imagePath, width: 50, errorBuilder: (context, error, stackTrace) => const Icon(Icons.image)),
+                    leading: Image.network(product.imageUrl, width: 50, errorBuilder: (context, error, stackTrace) => const Icon(Icons.image)),
                     title: Text(product.name, style: const TextStyle(fontWeight: FontWeight.bold)),
-                    subtitle: Text('Total: ₹${(product.price * quantity).toStringAsFixed(2)}'),
+                    subtitle: Text('Total: ₹${(product.ourPrice * quantity).toStringAsFixed(2)}'),
                     trailing: Row(
                       mainAxisSize: MainAxisSize.min,
                       children: [

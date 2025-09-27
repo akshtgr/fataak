@@ -29,7 +29,7 @@ class CartProvider with ChangeNotifier {
   double get totalAmount {
     var total = 0.0;
     _items.forEach((key, product) {
-      total += product.price * (_quantities[key] ?? 0);
+      total += product.ourPrice * (_quantities[key] ?? 0);
     });
     return total;
   }

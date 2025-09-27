@@ -146,7 +146,7 @@ class ProductCard extends StatelessWidget {
             Expanded(
               child: Center(
                 child: Image.network( // Use Image.network for firebase images
-                  product.imagePath,
+                  product.imageUrl,
                   fit: BoxFit.contain,
                   errorBuilder: (context, error, stackTrace) {
                     return const Center(child: Icon(Icons.image_not_supported, color: Colors.grey, size: 40,));
@@ -156,7 +156,7 @@ class ProductCard extends StatelessWidget {
             ),
             const SizedBox(height: 8),
             Text(product.name, style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 16)),
-            Text('₹${product.price.toStringAsFixed(2)} / ${product.stock}', style: TextStyle(color: Colors.grey.shade600, fontSize: 14)),
+            Text('₹${product.ourPrice.toStringAsFixed(2)} / ${product.unit}', style: TextStyle(color: Colors.grey.shade600, fontSize: 14)),
             const Spacer(),
             SizedBox(
               width: double.infinity,

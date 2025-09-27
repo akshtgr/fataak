@@ -17,7 +17,7 @@ class ProductProvider with ChangeNotifier {
       notifyListeners();
     } catch (error) {
       print(error);
-      throw error;
+      rethrow;
     }
   }
 }
