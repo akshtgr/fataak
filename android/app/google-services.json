@@ -1,0 +1,68 @@
+{
+  "project_info": {
+    "project_number": "252338467895",
+    "project_id": "fataakadmin",
+    "storage_bucket": "fataakadmin.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:252338467895:android:bcfd360dc0b1909e6c7bb2",
+        "android_client_info": {
+          "package_name": "com.example.fataak_admin"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "252338467895-387ess6q0i0mfnk9r730snnu7alnh6b5.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyDOfVMyr4_CQ-SsJtR_-2Gjxf3XU6e4veY"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "252338467895-387ess6q0i0mfnk9r730snnu7alnh6b5.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    },
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:252338467895:android:313ec0c591ba2c096c7bb2",
+        "android_client_info": {
+          "package_name": "com.fataak.fataak"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "252338467895-387ess6q0i0mfnk9r730snnu7alnh6b5.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyDOfVMyr4_CQ-SsJtR_-2Gjxf3XU6e4veY"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "252338467895-387ess6q0i0mfnk9r730snnu7alnh6b5.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

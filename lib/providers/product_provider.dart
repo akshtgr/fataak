@@ -16,7 +16,6 @@ class ProductProvider with ChangeNotifier {
           .toList();
       notifyListeners();
     } catch (error) {
-      print(error);
       rethrow;
     }
   }
