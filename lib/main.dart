@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:firebase_core/firebase_core.dart';
 import './providers/cart_provider.dart';
-import './screens/home_screen.dart';
+import './screens/tabs_screen.dart'; // Changed from home_screen
 import './providers/product_provider.dart';
 
 void main() async {
@@ -26,37 +26,45 @@ class FataakApp extends StatelessWidget {
         debugShowCheckedModeBanner: false,
         theme: ThemeData(
           primarySwatch: Colors.green,
-          scaffoldBackgroundColor: Colors.white,
+          scaffoldBackgroundColor: Colors.white, // Pure white background
           fontFamily: 'Roboto',
+
+          // Updated AppBar Theme
           appBarTheme: const AppBarTheme(
             backgroundColor: Colors.white,
-            elevation: 0,
+            elevation: 0, // No shadow
             iconTheme: IconThemeData(color: Color(0xFF333333)),
             titleTextStyle: TextStyle(
+              fontFamily: 'Roboto',
               color: Color(0xFF333333),
-              fontSize: 20,
+              fontSize: 22, // Slightly larger
               fontWeight: FontWeight.bold,
             ),
           ),
+
+          // Updated Text Theme
           textTheme: const TextTheme(
             bodyLarge: TextStyle(color: Color(0xFF333333), fontSize: 16),
             bodyMedium: TextStyle(color: Color(0xFF333333), fontSize: 14),
             headlineSmall: TextStyle(color: Color(0xFF333333), fontSize: 20, fontWeight: FontWeight.bold),
             titleLarge: TextStyle(color: Color(0xFF333333), fontSize: 18, fontWeight: FontWeight.bold),
           ),
+
+          // Updated Button Theme
           elevatedButtonTheme: ElevatedButtonThemeData(
             style: ElevatedButton.styleFrom(
-              backgroundColor: const Color(0xFFF5F5F5),
-              foregroundColor: const Color(0xFF333333),
+              backgroundColor: Colors.green, // Default to green
+              foregroundColor: Colors.white, // Default text to white
               elevation: 0,
               shape: RoundedRectangleBorder(
                 borderRadius: BorderRadius.circular(8.0),
               ),
-              textStyle: const TextStyle(fontWeight: FontWeight.bold),
+              textStyle: const TextStyle(fontWeight: FontWeight.bold, fontSize: 16),
+              padding: const EdgeInsets.symmetric(vertical: 12),
             ),
           ),
         ),
-        home: const HomeScreen(),
+        home: const TabsScreen(), // Use TabsScreen as home
       ),
     );
   }
