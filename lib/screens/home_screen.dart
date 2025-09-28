@@ -43,8 +43,15 @@ class _HomeScreenState extends State<HomeScreen> {
     return Scaffold(
       appBar: AppBar(
         title: const Text('Fataak'),
-        scrolledUnderElevation: 0.0, // Prevents color change on scroll
+        scrolledUnderElevation: 0.0,
         actions: [
+          // CHANGED: Added a search icon button here
+          IconButton(
+            icon: const Icon(Icons.search, size: 28),
+            onPressed: () {
+              // TODO: Implement search functionality
+            },
+          ),
           Consumer<CartProvider>(
             builder: (_, cart, ch) => badges.Badge(
               position: badges.BadgePosition.topEnd(top: 0, end: 3),
@@ -67,31 +74,13 @@ class _HomeScreenState extends State<HomeScreen> {
       ),
       body: RefreshIndicator(
         onRefresh: _refreshProducts,
-        // FINAL ADJUSTMENT: This container ensures the overscroll background is white
         child: Container(
           color: Colors.white,
           child: SingleChildScrollView(
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                Padding(
-                  padding: const EdgeInsets.symmetric(horizontal: 16.0, vertical: 8.0),
-                  child: TextField(
-                    decoration: InputDecoration(
-                      hintText: 'Search for vegetables, fruits...',
-                      prefixIcon: const Icon(Icons.search),
-                      border: OutlineInputBorder(
-                        borderRadius: BorderRadius.circular(8.0),
-                        borderSide: BorderSide(color: Colors.grey.shade300),
-                      ),
-                      enabledBorder: OutlineInputBorder(
-                        borderRadius: BorderRadius.circular(8.0),
-                        borderSide: BorderSide(color: Colors.grey.shade300),
-                      ),
-                      contentPadding: const EdgeInsets.symmetric(vertical: 0),
-                    ),
-                  ),
-                ),
+                // CHANGED: The search text field has been removed from here
                 Padding(
                   padding: const EdgeInsets.all(16.0),
                   child: Consumer<ProductProvider>(
