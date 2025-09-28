@@ -1,7 +1,11 @@
+// lib/models/product.dart
+
+import 'package:cloud_firestore/cloud_firestore.dart'; // <-- ADD THIS LINE
+
 class Product {
   final String id;
   final String name;
-  final String imageUrl; // This was missing
+  final String imageUrl;
   final double marketPrice;
   final double ourPrice;
   final int stock;
@@ -16,7 +20,7 @@ class Product {
   Product({
     required this.id,
     required this.name,
-    required this.imageUrl, // Add this
+    required this.imageUrl,
     required this.marketPrice,
     required this.ourPrice,
     required this.stock,
@@ -33,7 +37,7 @@ class Product {
     return Product(
       id: id,
       name: json['name'],
-      imageUrl: json['image_url'], // And add this line
+      imageUrl: json['image_url'],
       marketPrice: json['market_price'].toDouble(),
       ourPrice: json['our_price'].toDouble(),
       stock: json['stock'],
@@ -42,8 +46,9 @@ class Product {
       category: json['category'],
       isFeatured: json['is_featured'],
       tags: List<String>.from(json['tags']),
-      createdAt: DateTime.parse(json['created_at']),
-      updatedAt: DateTime.parse(json['updated_at']),
+      // This part is now correct because you've imported Timestamp
+      createdAt: (json['created_at'] as Timestamp).toDate(),
+      updatedAt: (json['updated_at'] as Timestamp).toDate(),
     );
   }
 }
