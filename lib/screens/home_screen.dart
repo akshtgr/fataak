@@ -103,8 +103,8 @@ class _HomeScreenState extends State<HomeScreen> {
     );
 
     // Dynamic Styling
-    final Color orangeColor = const Color(0xFFF07706);
-    final Color greenColor = const Color(0xFF1DAD03);
+    const Color orangeColor = Color(0xFFF07706);
+    const Color greenColor = Color(0xFF1DAD03);
 
     final isVegOrFruitSelected = _selectedFilter == 'Vegetables' || _selectedFilter == 'Fruits';
     final segmentSelectedColor = isVegOrFruitSelected ? greenColor : orangeColor;
@@ -116,23 +116,23 @@ class _HomeScreenState extends State<HomeScreen> {
     final fabOutlineColor = isSorted ? greenColor : orangeColor;
 
     final ButtonStyle segmentedButtonStyle = ButtonStyle(
-      backgroundColor: MaterialStateProperty.resolveWith<Color?>((states) {
-        if (states.contains(MaterialState.selected)) {
+      backgroundColor: WidgetStateProperty.resolveWith<Color?>((states) {
+        if (states.contains(WidgetState.selected)) {
           return segmentSelectedColor;
         }
         return Colors.transparent;
       }),
-      foregroundColor: MaterialStateProperty.resolveWith<Color?>((states) {
-        if (states.contains(MaterialState.selected)) {
+      foregroundColor: WidgetStateProperty.resolveWith<Color?>((states) {
+        if (states.contains(WidgetState.selected)) {
           return Colors.white;
         }
         return Colors.black54;
       }),
-      side: MaterialStateProperty.all(BorderSide(color: segmentOutlineColor, width: 1.5)),
-      shape: MaterialStateProperty.all(
+      side: WidgetStateProperty.all(BorderSide(color: segmentOutlineColor, width: 1.5)),
+      shape: WidgetStateProperty.all(
         RoundedRectangleBorder(borderRadius: BorderRadius.circular(20.0)),
       ),
-      minimumSize: MaterialStateProperty.all(const Size(0, 40)),
+      minimumSize: WidgetStateProperty.all(const Size(0, 40)),
     );
 
     return Scaffold(

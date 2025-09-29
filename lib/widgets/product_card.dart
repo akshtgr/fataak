@@ -5,6 +5,8 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 
+const Color customGreen = Color(0xFF1DAD03);
+
 class ProductCard extends StatelessWidget {
   final Product product;
   const ProductCard({required this.product, super.key});
@@ -13,7 +15,6 @@ class ProductCard extends StatelessWidget {
   Widget build(BuildContext context) {
     final cart = Provider.of<CartProvider>(context);
     final quantity = cart.quantities[product.id] ?? 0;
-    final customGreen = const Color(0xFF1DAD03);
 
     return GestureDetector(
       onTap: () {
@@ -116,7 +117,7 @@ class ProductCard extends StatelessWidget {
                         label: const Text('Add'),
                         style: OutlinedButton.styleFrom(
                           foregroundColor: customGreen,
-                          side: BorderSide(color: customGreen, width: 1.5),
+                          side: const BorderSide(color: customGreen, width: 1.5),
                           shape: const StadiumBorder(),
                         ),
                       )
