@@ -8,6 +8,9 @@ import './cart_screen.dart';
 import '../widgets/product_card.dart';
 import '../widgets/skeleton_loader.dart';
 
+// Enum for sorting options
+enum SortOptions { defaultSort, nameAZ, nameZA, priceLowHigh, priceHighLow }
+
 class HomeScreen extends StatefulWidget {
   const HomeScreen({super.key});
 
@@ -16,6 +19,9 @@ class HomeScreen extends StatefulWidget {
 }
 
 class _HomeScreenState extends State<HomeScreen> {
+  String _selectedFilter = 'All';
+  SortOptions _selectedSort = SortOptions.defaultSort;
+
   @override
   void initState() {
     super.initState();
@@ -28,10 +34,66 @@ class _HomeScreenState extends State<HomeScreen> {
     await Provider.of<ProductProvider>(context, listen: false).fetchProducts();
   }
 
+  // Helper widget to build the sort menu items with a checkmark for the active one
+  PopupMenuItem<SortOptions> _buildSortMenuItem(SortOptions option, String title) {
+    return PopupMenuItem<SortOptions>(
+      value: option,
+      child: Row(
+        children: [
+          // FIX: Show a check icon if this option is currently selected
+          Icon(
+            _selectedSort == option ? Icons.check : null,
+            color: Colors.green,
+          ),
+          const SizedBox(width: 8),
+          Text(title),
+        ],
+      ),
+    );
+  }
+
+
   @override
   Widget build(BuildContext context) {
     final productProvider = Provider.of<ProductProvider>(context);
-    final products = productProvider.products;
+
+    // Filtering and Sorting Logic
+    final filteredProducts = productProvider.products.where((product) {
+      final category = product.category.trim().toLowerCase();
+      switch (_selectedFilter) {
+        case 'All':
+          return true;
+        case 'Vegetables':
+          return category == 'vegetable';
+        case 'Fruits':
+          return category == 'fruit';
+        default:
+          return false;
+      }
+    }).toList();
+
+    List<dynamic> sortedProducts = List.from(filteredProducts);
+
+    switch (_selectedSort) {
+      case SortOptions.nameAZ:
+        sortedProducts.sort((a, b) => a.name.toLowerCase().compareTo(b.name.toLowerCase()));
+        break;
+      case SortOptions.nameZA:
+        sortedProducts.sort((a, b) => b.name.toLowerCase().compareTo(a.name.toLowerCase()));
+        break;
+      case SortOptions.priceLowHigh:
+        sortedProducts.sort((a, b) => a.ourPrice.compareTo(b.ourPrice));
+        break;
+      case SortOptions.priceHighLow:
+        sortedProducts.sort((a, b) => b.ourPrice.compareTo(a.ourPrice));
+        break;
+      case SortOptions.defaultSort:
+        break;
+    }
+
+    final inStockProducts = sortedProducts.where((p) => p.inStock).toList();
+    final outOfStockProducts = sortedProducts.where((p) => !p.inStock).toList();
+    sortedProducts = [...inStockProducts, ...outOfStockProducts];
 
     const gridDelegate = SliverGridDelegateWithFixedCrossAxisCount(
       crossAxisCount: 2,
@@ -40,17 +102,47 @@ class _HomeScreenState extends State<HomeScreen> {
       mainAxisSpacing: 16,
     );
 
+    // Dynamic Styling
+    final Color orangeColor = const Color(0xFFF07706);
+    final Color greenColor = const Color(0xFF1DAD03);
+
+    final isVegOrFruitSelected = _selectedFilter == 'Vegetables' || _selectedFilter == 'Fruits';
+    final segmentSelectedColor = isVegOrFruitSelected ? greenColor : orangeColor;
+    final segmentOutlineColor = isVegOrFruitSelected ? greenColor : orangeColor;
+
+    final isSorted = _selectedSort != SortOptions.defaultSort;
+    final fabBackgroundColor = isSorted ? greenColor : Colors.transparent;
+    final fabIconColor = isSorted ? Colors.white : orangeColor;
+    final fabOutlineColor = isSorted ? greenColor : orangeColor;
+
+    final ButtonStyle segmentedButtonStyle = ButtonStyle(
+      backgroundColor: MaterialStateProperty.resolveWith<Color?>((states) {
+        if (states.contains(MaterialState.selected)) {
+          return segmentSelectedColor;
+        }
+        return Colors.transparent;
+      }),
+      foregroundColor: MaterialStateProperty.resolveWith<Color?>((states) {
+        if (states.contains(MaterialState.selected)) {
+          return Colors.white;
+        }
+        return Colors.black54;
+      }),
+      side: MaterialStateProperty.all(BorderSide(color: segmentOutlineColor, width: 1.5)),
+      shape: MaterialStateProperty.all(
+        RoundedRectangleBorder(borderRadius: BorderRadius.circular(20.0)),
+      ),
+      minimumSize: MaterialStateProperty.all(const Size(0, 40)),
+    );
+
     return Scaffold(
       appBar: AppBar(
         title: const Text('Fataak'),
         scrolledUnderElevation: 0.0,
         actions: [
-          // CHANGED: Added a search icon button here
           IconButton(
             icon: const Icon(Icons.search, size: 28),
-            onPressed: () {
-              // TODO: Implement search functionality
-            },
+            onPressed: () {},
           ),
           Consumer<CartProvider>(
             builder: (_, cart, ch) => badges.Badge(
@@ -80,7 +172,64 @@ class _HomeScreenState extends State<HomeScreen> {
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                // CHANGED: The search text field has been removed from here
+                Padding(
+                  padding: const EdgeInsets.fromLTRB(16.0, 16.0, 16.0, 0),
+                  child: Row(
+                    children: [
+                      Expanded(
+                        child: SegmentedButton<String>(
+                          showSelectedIcon: false,
+                          segments: const [
+                            ButtonSegment(value: 'All', label: Text('All')),
+                            ButtonSegment(value: 'Vegetables', label: Text('Vegetables')),
+                            ButtonSegment(value: 'Fruits', label: Text('Fruits')),
+                          ],
+                          selected: {_selectedFilter},
+                          onSelectionChanged: (Set<String> newSelection) {
+                            setState(() {
+                              _selectedFilter = newSelection.first;
+                            });
+                          },
+                          style: segmentedButtonStyle,
+                        ),
+                      ),
+                      const SizedBox(width: 12),
+                      PopupMenuButton<SortOptions>(
+                        onSelected: (SortOptions result) {
+                          setState(() {
+                            _selectedSort = result;
+                          });
+                        },
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(12.0),
+                        ),
+                        color: Colors.white,
+                        offset: const Offset(0, 50),
+                        // Use the helper to build the menu items
+                        itemBuilder: (BuildContext context) => <PopupMenuEntry<SortOptions>>[
+                          _buildSortMenuItem(SortOptions.defaultSort, 'Default'),
+                          _buildSortMenuItem(SortOptions.nameAZ, 'Name: A to Z'),
+                          _buildSortMenuItem(SortOptions.nameZA, 'Name: Z to A'),
+                          _buildSortMenuItem(SortOptions.priceLowHigh, 'Price: Low to High'),
+                          _buildSortMenuItem(SortOptions.priceHighLow, 'Price: High to Low'),
+                        ],
+                        child: Container(
+                          // FIX: Reduced padding to make the button slightly smaller.
+                          padding: const EdgeInsets.all(7),
+                          decoration: BoxDecoration(
+                            color: fabBackgroundColor,
+                            shape: BoxShape.circle,
+                            border: Border.all(color: fabOutlineColor, width: 1.5),
+                          ),
+                          child: Icon(
+                            Icons.sort,
+                            color: fabIconColor,
+                          ),
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
                 Padding(
                   padding: const EdgeInsets.all(16.0),
                   child: Consumer<ProductProvider>(
@@ -93,17 +242,24 @@ class _HomeScreenState extends State<HomeScreen> {
                           gridDelegate: gridDelegate,
                           itemBuilder: (ctx, i) => const SkeletonLoader(),
                         );
-                      } else if (provider.products.isEmpty) {
+                      } else if (sortedProducts.isEmpty) {
                         return const Center(
-                          child: Text('No products found.'),
+                          child: Padding(
+                            padding: EdgeInsets.only(top: 40.0),
+                            child: Text('No products found.'),
+                          ),
                         );
                       } else {
-                        return GridView.builder(
-                          shrinkWrap: true,
-                          physics: const NeverScrollableScrollPhysics(),
-                          itemCount: products.length,
-                          gridDelegate: gridDelegate,
-                          itemBuilder: (ctx, i) => ProductCard(product: products[i]),
+                        return AnimatedSwitcher(
+                          duration: const Duration(milliseconds: 300),
+                          child: GridView.builder(
+                            key: ValueKey('$_selectedFilter-$_selectedSort'),
+                            shrinkWrap: true,
+                            physics: const NeverScrollableScrollPhysics(),
+                            itemCount: sortedProducts.length,
+                            gridDelegate: gridDelegate,
+                            itemBuilder: (ctx, i) => ProductCard(product: sortedProducts[i]),
+                          ),
                         );
                       }
                     },
