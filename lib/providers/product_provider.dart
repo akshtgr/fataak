@@ -19,8 +19,7 @@ class ProductProvider with ChangeNotifier {
           .map((doc) => Product.fromJson(doc.data(), doc.id))
           .toList();
     } catch (error) {
-      // You might want to handle this error more gracefully
-      print(error);
+      debugPrint('Error fetching products: $error');
     } finally {
       _isLoading = false; // Set loading to false after fetching
       notifyListeners();
