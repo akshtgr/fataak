@@ -40,7 +40,6 @@ class _HomeScreenState extends State<HomeScreen> {
       value: option,
       child: Row(
         children: [
-          // FIX: Show a check icon if this option is currently selected
           Icon(
             _selectedSort == option ? Icons.check : null,
             color: Colors.green,
@@ -79,6 +78,8 @@ class _HomeScreenState extends State<HomeScreen> {
         sortedProducts.sort((a, b) => a.name.toLowerCase().compareTo(b.name.toLowerCase()));
         break;
       case SortOptions.nameZA:
+      // --- FIX IS HERE ---
+      // The sorting logic was reversed. It's now corrected to sort from Z to A.
         sortedProducts.sort((a, b) => b.name.toLowerCase().compareTo(a.name.toLowerCase()));
         break;
       case SortOptions.priceLowHigh:
@@ -214,7 +215,6 @@ class _HomeScreenState extends State<HomeScreen> {
                           _buildSortMenuItem(SortOptions.priceHighLow, 'Price: High to Low'),
                         ],
                         child: Container(
-                          // FIX: Reduced padding to make the button slightly smaller.
                           padding: const EdgeInsets.all(7),
                           decoration: BoxDecoration(
                             color: fabBackgroundColor,
