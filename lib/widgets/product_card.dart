@@ -11,7 +11,9 @@ class ProductCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final cart = Provider.of<CartProvider>(context, listen: false);
+    final cart = Provider.of<CartProvider>(context);
+    final quantity = cart.quantities[product.id] ?? 0;
+    final customGreen = const Color(0xFF1DAD03);
 
     return GestureDetector(
       onTap: () {
@@ -53,7 +55,6 @@ class ProductCard extends StatelessWidget {
                 alignment: Alignment.topLeft,
                 child: Text(
                   product.name,
-                  // CHANGED: Font size reduced again from 16 to 15. This will fix the cropping.
                   style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 15),
                   maxLines: 2,
                 ),
@@ -63,54 +64,105 @@ class ProductCard extends StatelessWidget {
                 'Stock: ${product.stock} ${product.unit}',
                 style: TextStyle(color: Colors.grey.shade600, fontSize: 13),
               ),
-              const SizedBox(height: 4),
+              const SizedBox(height: 8),
               Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                crossAxisAlignment: CrossAxisAlignment.center,
                 children: [
-                  Text(
-                    '₹${product.ourPrice.toStringAsFixed(0)}',
-                    style: const TextStyle(
-                      color: Colors.black,
-                      fontWeight: FontWeight.bold,
-                      fontSize: 18,
-                    ),
+                  Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Text(
+                        '₹${product.ourPrice.toStringAsFixed(0)}',
+                        style: const TextStyle(
+                          color: Colors.black,
+                          fontWeight: FontWeight.bold,
+                          fontSize: 18,
+                        ),
+                      ),
+                      Text(
+                        '₹${product.marketPrice.toStringAsFixed(0)}',
+                        style: const TextStyle(
+                          color: Colors.red,
+                          decoration: TextDecoration.lineThrough,
+                          fontSize: 14,
+                        ),
+                      ),
+                    ],
                   ),
-                  const SizedBox(width: 8),
-                  Text(
-                    '₹${product.marketPrice.toStringAsFixed(0)}',
-                    style: const TextStyle(
-                      color: Colors.red,
-                      decoration: TextDecoration.lineThrough,
-                      fontSize: 14,
+
+                  // --- THE FIX IS HERE ---
+                  // This SizedBox now ensures a consistent height for both the button and the stepper.
+                  SizedBox(
+                    height: 36, // Set a fixed height
+                    child: AnimatedSwitcher(
+                      duration: const Duration(milliseconds: 200),
+                      child: (product.inStock && product.stock > 0)
+                          ? (quantity == 0
+                      // The "Add" button
+                          ? OutlinedButton.icon(
+                        key: const ValueKey('addButton'),
+                        onPressed: () {
+                          cart.addItem(product);
+                          ScaffoldMessenger.of(context).hideCurrentSnackBar();
+                          ScaffoldMessenger.of(context).showSnackBar(
+                            SnackBar(
+                              content: Text('${product.name} added to cart!'),
+                              duration: const Duration(seconds: 2),
+                            ),
+                          );
+                        },
+                        icon: const Icon(Icons.add, size: 18),
+                        label: const Text('Add'),
+                        style: OutlinedButton.styleFrom(
+                          foregroundColor: customGreen,
+                          side: BorderSide(color: customGreen, width: 1.5),
+                          shape: const StadiumBorder(),
+                        ),
+                      )
+                      // The stepper
+                          : Container(
+                        key: const ValueKey('stepper'),
+                        decoration: BoxDecoration(
+                          color: customGreen,
+                          borderRadius: BorderRadius.circular(20),
+                        ),
+                        child: Row(
+                          children: [
+                            IconButton(
+                              icon: const Icon(Icons.remove, color: Colors.white, size: 16),
+                              onPressed: () => cart.removeSingleItem(product.id),
+                              constraints: const BoxConstraints(),
+                              padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+                            ),
+                            Text(
+                              quantity.toString(),
+                              style: const TextStyle(color: Colors.white, fontWeight: FontWeight.bold, fontSize: 16),
+                            ),
+                            IconButton(
+                              icon: const Icon(Icons.add, color: Colors.white, size: 16),
+                              onPressed: () => cart.addItem(product),
+                              constraints: const BoxConstraints(),
+                              padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+                            ),
+                          ],
+                        ),
+                      ))
+                      // Out of stock button
+                          : Container(
+                        padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 5),
+                        decoration: BoxDecoration(
+                          color: Colors.grey.shade200,
+                          borderRadius: BorderRadius.circular(20),
+                        ),
+                        child: Text(
+                          'Out of Stock',
+                          style: TextStyle(color: Colors.grey.shade600, fontSize: 12),
+                        ),
+                      ),
                     ),
                   ),
                 ],
-              ),
-              const SizedBox(height: 8),
-              SizedBox(
-                width: double.infinity,
-                child: ElevatedButton(
-                  onPressed: product.inStock && product.stock > 0
-                      ? () {
-                    cart.addItem(product);
-                    ScaffoldMessenger.of(context).hideCurrentSnackBar();
-                    ScaffoldMessenger.of(context).showSnackBar(
-                      SnackBar(
-                        content: Text('${product.name} added to cart!'),
-                        duration: const Duration(seconds: 2),
-                      ),
-                    );
-                  }
-                      : null,
-                  style: ElevatedButton.styleFrom(
-                    backgroundColor: product.inStock && product.stock > 0
-                        ? Colors.green
-                        : Colors.grey.shade300,
-                    foregroundColor: product.inStock && product.stock > 0
-                        ? Colors.white
-                        : Colors.grey.shade600,
-                  ),
-                  child: Text(product.inStock && product.stock > 0 ? 'Add to Cart' : 'Out of Stock'),
-                ),
               ),
             ],
           ),
