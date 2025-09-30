@@ -1,5 +1,6 @@
 import 'package:fataak/screens/cart_screen.dart';
 import 'package:fataak/screens/home_screen.dart';
+import 'package:fataak/screens/profile_screen.dart';
 import 'package:flutter/material.dart';
 
 class TabsScreen extends StatefulWidget {
@@ -12,14 +13,6 @@ class TabsScreen extends StatefulWidget {
 class _TabsScreenState extends State<TabsScreen> {
   int _selectedPageIndex = 0;
 
-  // Placeholder screens for Categories and Profile
-  final Widget _categoriesScreen = const Scaffold(
-    body: Center(child: Text('Categories - Coming Soon!', style: TextStyle(fontSize: 18))),
-  );
-  final Widget _profileScreen = const Scaffold(
-    body: Center(child: Text('Profile - Coming Soon!', style: TextStyle(fontSize: 18))),
-  );
-
   late final List<Widget> _pages;
 
   @override
@@ -27,9 +20,8 @@ class _TabsScreenState extends State<TabsScreen> {
     super.initState();
     _pages = [
       const HomeScreen(),
-      _categoriesScreen,
       const CartScreen(),
-      _profileScreen,
+      const ProfileScreen(),
     ];
   }
 
@@ -46,7 +38,6 @@ class _TabsScreenState extends State<TabsScreen> {
       bottomNavigationBar: BottomNavigationBar(
         onTap: _selectPage,
         currentIndex: _selectedPageIndex,
-        // This makes the background white and selected item colored
         type: BottomNavigationBarType.fixed,
         backgroundColor: Colors.white,
         selectedItemColor: Colors.green,
@@ -56,11 +47,6 @@ class _TabsScreenState extends State<TabsScreen> {
             icon: Icon(Icons.home_outlined),
             activeIcon: Icon(Icons.home),
             label: 'Home',
-          ),
-          BottomNavigationBarItem(
-            icon: Icon(Icons.category_outlined),
-            activeIcon: Icon(Icons.category),
-            label: 'Categories',
           ),
           BottomNavigationBarItem(
             icon: Icon(Icons.shopping_cart_outlined),
