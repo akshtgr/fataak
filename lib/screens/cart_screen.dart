@@ -18,6 +18,7 @@ class CartScreen extends StatefulWidget {
 class _CartScreenState extends State<CartScreen> {
   late TextEditingController _nameController;
   late TextEditingController _addressController;
+  late TextEditingController _phoneController;
   bool _isOrderable = false;
 
   @override
@@ -30,9 +31,11 @@ class _CartScreenState extends State<CartScreen> {
     _nameController =
         TextEditingController(text: '${userData.firstName} ${userData.lastName}'.trim());
     _addressController = TextEditingController(text: userData.address);
+    _phoneController = TextEditingController(text: userData.phone);
 
     _nameController.addListener(_validateFields);
     _addressController.addListener(_validateFields);
+    _phoneController.addListener(_validateFields);
     cartProvider.addListener(_validateFields);
 
     _validateFields();
@@ -42,9 +45,11 @@ class _CartScreenState extends State<CartScreen> {
   void dispose() {
     _nameController.removeListener(_validateFields);
     _addressController.removeListener(_validateFields);
+    _phoneController.removeListener(_validateFields);
     Provider.of<CartProvider>(context, listen: false).removeListener(_validateFields);
     _nameController.dispose();
     _addressController.dispose();
+    _phoneController.dispose();
     super.dispose();
   }
 
@@ -52,9 +57,13 @@ class _CartScreenState extends State<CartScreen> {
     final cart = Provider.of<CartProvider>(context, listen: false);
     final name = _nameController.text.trim();
     final address = _addressController.text.trim();
+    final phone = _phoneController.text.trim();
     if (mounted) {
       setState(() {
-        _isOrderable = cart.itemCount > 0 && name.isNotEmpty && address.isNotEmpty;
+        _isOrderable = cart.itemCount > 0 &&
+            name.isNotEmpty &&
+            address.isNotEmpty &&
+            phone.isNotEmpty;
       });
     }
   }
@@ -64,17 +73,21 @@ class _CartScreenState extends State<CartScreen> {
     final currentName =
     '${userProvider.userData.firstName} ${userProvider.userData.lastName}'.trim();
     final currentAddress = userProvider.userData.address;
+    final currentPhone = userProvider.userData.phone;
 
     final newName = _nameController.text.trim();
     final newAddress = _addressController.text.trim();
+    final newPhone = _phoneController.text.trim();
 
-    if (newName != currentName || newAddress != currentAddress) {
+    if (newName != currentName ||
+        newAddress != currentAddress ||
+        newPhone != currentPhone) {
       final shouldSave = await showDialog<bool>(
         context: context,
         builder: (ctx) => AlertDialog(
           title: const Text('Update Profile?'),
-          content:
-          const Text('Do you want to save this as your default name/address?'),
+          content: const Text(
+              'Do you want to save this as your default name/address/phone?'),
           actions: [
             TextButton(
               onPressed: () => Navigator.of(ctx).pop(false),
@@ -91,13 +104,14 @@ class _CartScreenState extends State<CartScreen> {
       if (shouldSave == true) {
         List<String> nameParts = newName.split(' ');
         String firstName = nameParts.isNotEmpty ? nameParts.first : '';
-        String lastName = nameParts.length > 1 ? nameParts.sublist(1).join(' ') : '';
+        String lastName =
+        nameParts.length > 1 ? nameParts.sublist(1).join(' ') : '';
 
         userProvider.saveUserData(UserData(
           firstName: firstName,
           lastName: lastName,
           address: newAddress,
-          phone: userProvider.userData.phone,
+          phone: newPhone,
         ));
       }
     }
@@ -108,18 +122,18 @@ class _CartScreenState extends State<CartScreen> {
 
     final name = _nameController.text.trim();
     final address = _addressController.text.trim();
+    final phone = _phoneController.text.trim();
 
-    // --- NEW MESSAGE FORMAT ---
     String message = "🌿 New Order from Fataak App 🌿\n\n";
-    message += "👤 Customer Name: $name\n\n";
+    message += "👤 Customer Name: $name\n";
+    message += "📞 Phone: $phone\n\n";
     message += "🛒 Items:\n";
     cart.items.forEach((productId, product) {
       final quantity = cart.quantities[productId];
-      message += "- ${product.name} x$quantity\n"; // Updated item format
+      message += "- ${product.name} x$quantity\n";
     });
     message += "\n💰 Total: ₹${cart.totalAmount.toStringAsFixed(2)}\n\n";
     message += "📍 Delivery Address:\n$address";
-    // -------------------------
 
     const String whatsappNumber = "+918770783359";
     final Uri whatsappUrl = Uri.parse(
@@ -233,6 +247,18 @@ class _CartScreenState extends State<CartScreen> {
                     const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
                   ),
                   maxLines: 2,
+                ),
+                const SizedBox(height: 12),
+                TextField(
+                  controller: _phoneController,
+                  decoration: InputDecoration(
+                    labelText: 'Your Phone Number',
+                    border: OutlineInputBorder(
+                        borderRadius: BorderRadius.circular(8)),
+                    contentPadding:
+                    const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
+                  ),
+                  keyboardType: TextInputType.phone,
                 ),
                 const SizedBox(height: 12),
                 Row(

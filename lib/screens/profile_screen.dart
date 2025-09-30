@@ -126,12 +126,21 @@ class _ProfileScreenState extends State<ProfileScreen> {
         TextFormField(
           controller: _phoneController,
           decoration: const InputDecoration(
-            labelText: 'Phone Number (Optional)',
-            hintText: 'Enter your phone number',
+            labelText: 'Phone Number',
+            hintText: 'Enter your 10-digit phone number',
             prefixIcon: Icon(Icons.phone_outlined),
             border: OutlineInputBorder(),
           ),
           keyboardType: TextInputType.phone,
+          validator: (value) {
+            if (value == null || value.trim().isEmpty) {
+              return 'Please enter your phone number';
+            }
+            if (value.trim().length != 10) {
+              return 'Please enter a valid 10-digit number';
+            }
+            return null;
+          },
         ),
       ],
     );
