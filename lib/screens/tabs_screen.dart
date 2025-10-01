@@ -36,18 +36,15 @@ class _TabsScreenState extends State<TabsScreen> {
 
   @override
   Widget build(BuildContext context) {
-    // Using WillPopScope to control the back button behavior
-    return WillPopScope(
-      onWillPop: () async {
-        // If the current page is not the home page (index 0)
-        if (_selectedPageIndex != 0) {
-          // Select the home page
-          _selectPage(0);
-          // Prevent the app from closing
-          return false;
+    return PopScope(
+      canPop: _selectedPageIndex == 0,
+      onPopInvoked: (didPop) {
+        if (didPop) {
+          return;
         }
-        // If it is the home page, allow the app to close
-        return true;
+        if (_selectedPageIndex != 0) {
+          _selectPage(0);
+        }
       },
       child: Scaffold(
         body: _pages[_selectedPageIndex],
@@ -64,7 +61,6 @@ class _TabsScreenState extends State<TabsScreen> {
               activeIcon: Icon(Icons.home),
               label: 'Home',
             ),
-            // Cart icon is now wrapped with a Consumer to get cart data
             BottomNavigationBarItem(
               icon: Consumer<CartProvider>(
                 builder: (_, cart, ch) => badges.Badge(
