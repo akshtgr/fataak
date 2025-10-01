@@ -1,10 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
-import 'package:badges/badges.dart' as badges;
 
 import '../providers/product_provider.dart';
-import '../providers/cart_provider.dart';
-import './cart_screen.dart';
 import '../widgets/product_card.dart';
 import '../widgets/skeleton_loader.dart';
 
@@ -78,8 +75,6 @@ class _HomeScreenState extends State<HomeScreen> {
         sortedProducts.sort((a, b) => a.name.toLowerCase().compareTo(b.name.toLowerCase()));
         break;
       case SortOptions.nameZA:
-      // --- FIX IS HERE ---
-      // The sorting logic was reversed. It's now corrected to sort from Z to A.
         sortedProducts.sort((a, b) => b.name.toLowerCase().compareTo(a.name.toLowerCase()));
         break;
       case SortOptions.priceLowHigh:
@@ -143,24 +138,9 @@ class _HomeScreenState extends State<HomeScreen> {
         actions: [
           IconButton(
             icon: const Icon(Icons.search, size: 28),
-            onPressed: () {},
-          ),
-          Consumer<CartProvider>(
-            builder: (_, cart, ch) => badges.Badge(
-              position: badges.BadgePosition.topEnd(top: 0, end: 3),
-              badgeContent: Text(
-                cart.itemCount.toString(),
-                style: const TextStyle(color: Colors.white, fontSize: 12),
-              ),
-              showBadge: cart.itemCount > 0,
-              child: ch,
-            ),
-            child: IconButton(
-              icon: const Icon(Icons.shopping_cart_outlined, size: 28),
-              onPressed: () {
-                Navigator.of(context).push(MaterialPageRoute(builder: (ctx) => const CartScreen()));
-              },
-            ),
+            onPressed: () {
+              // TODO: Implement search functionality
+            },
           ),
           const SizedBox(width: 8),
         ],

@@ -22,25 +22,36 @@ class _CartScreenState extends State<CartScreen> {
   late TextEditingController _addressController;
   late TextEditingController _phoneController;
   bool _isOrderable = false;
+  bool _isLoading = true;
 
   @override
   void initState() {
     super.initState();
-    final userProvider = Provider.of<UserProvider>(context, listen: false);
-    final userData = userProvider.userData;
+    _nameController = TextEditingController();
+    _addressController = TextEditingController();
+    _phoneController = TextEditingController();
+    _loadUserData();
+
     final cartProvider = Provider.of<CartProvider>(context, listen: false);
-
-    _nameController =
-        TextEditingController(text: '${userData.firstName} ${userData.lastName}'.trim());
-    _addressController = TextEditingController(text: userData.address);
-    _phoneController = TextEditingController(text: userData.phone);
-
     _nameController.addListener(_validateFields);
     _addressController.addListener(_validateFields);
     _phoneController.addListener(_validateFields);
     cartProvider.addListener(_validateFields);
+  }
 
-    _validateFields();
+  Future<void> _loadUserData() async {
+    final userProvider = Provider.of<UserProvider>(context, listen: false);
+    await userProvider.loadUserData();
+    final userData = userProvider.userData;
+
+    setState(() {
+      _nameController.text =
+          '${userData.firstName} ${userData.lastName}'.trim();
+      _addressController.text = userData.address;
+      _phoneController.text = userData.phone;
+      _isLoading = false;
+      _validateFields();
+    });
   }
 
   @override
@@ -48,7 +59,8 @@ class _CartScreenState extends State<CartScreen> {
     _nameController.removeListener(_validateFields);
     _addressController.removeListener(_validateFields);
     _phoneController.removeListener(_validateFields);
-    Provider.of<CartProvider>(context, listen: false).removeListener(_validateFields);
+    Provider.of<CartProvider>(context, listen: false)
+        .removeListener(_validateFields);
     _nameController.dispose();
     _addressController.dispose();
     _phoneController.dispose();
@@ -70,10 +82,12 @@ class _CartScreenState extends State<CartScreen> {
     }
   }
 
-  Future<void> _promptToSaveChanges() async {
+  // This function now returns a boolean indicating if details were changed.
+  Future<bool> _promptToSaveChanges() async {
     final userProvider = Provider.of<UserProvider>(context, listen: false);
     final currentName =
-    '${userProvider.userData.firstName} ${userProvider.userData.lastName}'.trim();
+    '${userProvider.userData.firstName} ${userProvider.userData.lastName}'
+        .trim();
     final currentAddress = userProvider.userData.address;
     final currentPhone = userProvider.userData.phone;
 
@@ -81,9 +95,11 @@ class _CartScreenState extends State<CartScreen> {
     final newAddress = _addressController.text.trim();
     final newPhone = _phoneController.text.trim();
 
-    if (newName != currentName ||
+    final bool detailsChanged = newName != currentName ||
         newAddress != currentAddress ||
-        newPhone != currentPhone) {
+        newPhone != currentPhone;
+
+    if (detailsChanged) {
       final shouldSave = await showDialog<bool>(
         context: context,
         builder: (ctx) => AlertDialog(
@@ -109,24 +125,41 @@ class _CartScreenState extends State<CartScreen> {
         String lastName =
         nameParts.length > 1 ? nameParts.sublist(1).join(' ') : '';
 
-        userProvider.saveUserData(UserData(
+        await userProvider.saveUserData(UserData(
           firstName: firstName,
           lastName: lastName,
           address: newAddress,
           phone: newPhone,
         ));
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(content: Text('Information updated or saved')),
+        );
       }
+      return true; // Indicates that the dialog was shown
     }
+    return false; // Indicates that no details were changed
   }
 
+  // This is the new main function for the "Place Order" button.
   void _placeOrder(CartProvider cart) async {
-    await _promptToSaveChanges();
+    // First, check if details were changed and show the dialog if needed.
+    final bool dialogShown = await _promptToSaveChanges();
 
+    // If the dialog was shown, stop here. The user needs to click again.
+    if (dialogShown) {
+      return;
+    }
+
+    // If no dialog was shown (details were not changed), proceed to WhatsApp.
+    _sendOrderToWhatsApp(cart);
+  }
+
+  // This function now ONLY handles sending the order and redirecting.
+  void _sendOrderToWhatsApp(CartProvider cart) async {
     final name = _nameController.text.trim();
     final address = _addressController.text.trim();
     final phone = _phoneController.text.trim();
 
-    // Create the order data
     var uuid = const Uuid();
     final orderData = {
       'orderId': uuid.v4(),
@@ -147,9 +180,6 @@ class _CartScreenState extends State<CartScreen> {
       'timestamp': FieldValue.serverTimestamp(),
     };
 
-    // Send the order to Firestore
-    await FirebaseFirestore.instance.collection('orders').add(orderData);
-
     String message = "🌿 New Order from Fataak App 🌿\n\n";
     message += "👤 Customer Name: $name\n";
     message += "📞 Phone: $phone\n\n";
@@ -168,6 +198,7 @@ class _CartScreenState extends State<CartScreen> {
 
     try {
       if (await canLaunchUrl(whatsappUrl)) {
+        await FirebaseFirestore.instance.collection('orders').add(orderData);
         await launchUrl(whatsappUrl, mode: LaunchMode.externalApplication);
         cart.clear();
       } else {
@@ -184,6 +215,17 @@ class _CartScreenState extends State<CartScreen> {
   @override
   Widget build(BuildContext context) {
     final cart = Provider.of<CartProvider>(context);
+
+    if (_isLoading) {
+      return Scaffold(
+        appBar: AppBar(
+          title: const Text('Your Cart'),
+        ),
+        body: const Center(
+          child: CircularProgressIndicator(),
+        ),
+      );
+    }
 
     return Scaffold(
       appBar: AppBar(
