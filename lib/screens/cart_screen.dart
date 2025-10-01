@@ -1,8 +1,10 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:fataak/models/user_data.dart';
 import 'package:fataak/providers/user_provider.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:url_launcher/url_launcher.dart';
+import 'package:uuid/uuid.dart';
 
 import '../providers/cart_provider.dart';
 
@@ -123,6 +125,30 @@ class _CartScreenState extends State<CartScreen> {
     final name = _nameController.text.trim();
     final address = _addressController.text.trim();
     final phone = _phoneController.text.trim();
+
+    // Create the order data
+    var uuid = const Uuid();
+    final orderData = {
+      'orderId': uuid.v4(),
+      'customerName': name,
+      'phone': phone,
+      'address': address,
+      'items': cart.items.entries.map((entry) {
+        final product = entry.value;
+        final quantity = cart.quantities[entry.key] ?? 0;
+        return {
+          'name': product.name,
+          'qty': quantity,
+          'price': product.ourPrice,
+        };
+      }).toList(),
+      'totalAmount': cart.totalAmount,
+      'status': 'pending',
+      'timestamp': FieldValue.serverTimestamp(),
+    };
+
+    // Send the order to Firestore
+    await FirebaseFirestore.instance.collection('orders').add(orderData);
 
     String message = "🌿 New Order from Fataak App 🌿\n\n";
     message += "👤 Customer Name: $name\n";
