@@ -283,7 +283,7 @@ class _CartScreenState extends State<CartScreen> {
           Container(
             padding: const EdgeInsets.all(12),
             decoration: BoxDecoration(
-              color: Colors.white,
+              color: const Color(0xFFFAFAFA),
               border:
               Border(top: BorderSide(color: Colors.grey.shade200, width: 1)),
             ),

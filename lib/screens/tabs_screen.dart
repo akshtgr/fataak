@@ -53,7 +53,7 @@ class _TabsScreenState extends State<TabsScreen> {
           onTap: _selectPage,
           currentIndex: _selectedPageIndex,
           type: BottomNavigationBarType.fixed,
-          backgroundColor: Colors.white,
+          backgroundColor: const Color(0xFFFAFAFA),
           selectedItemColor: Colors.green,
           unselectedItemColor: Colors.grey,
           items: [

@@ -365,7 +365,7 @@ class _HomeScreenState extends State<HomeScreen> {
       child: RefreshIndicator(
         onRefresh: _refreshProducts,
         child: Container(
-          color: Colors.white,
+          color: const Color(0xFFFAFAFA),
           child: SingleChildScrollView(
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,

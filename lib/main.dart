@@ -36,10 +36,10 @@ class FataakApp extends StatelessWidget {
         theme: ThemeData(
           useMaterial3: true,
           primarySwatch: Colors.green,
-          scaffoldBackgroundColor: Colors.white,
+          scaffoldBackgroundColor: const Color(0xFFFAFAFA),
           fontFamily: 'Roboto',
           appBarTheme: const AppBarTheme(
-            backgroundColor: Colors.white,
+            backgroundColor: Color(0xFFFAFAFA),
             elevation: 0,
             iconTheme: IconThemeData(color: Color(0xFF333333)),
             titleTextStyle: TextStyle(
