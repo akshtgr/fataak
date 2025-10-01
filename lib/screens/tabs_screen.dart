@@ -38,7 +38,8 @@ class _TabsScreenState extends State<TabsScreen> {
   Widget build(BuildContext context) {
     return PopScope(
       canPop: _selectedPageIndex == 0,
-      onPopInvoked: (didPop) {
+      // FIX: Replaced deprecated 'onPopInvoked' with the new syntax
+      onPopInvoked: (bool didPop) {
         if (didPop) {
           return;
         }

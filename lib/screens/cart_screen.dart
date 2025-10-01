@@ -82,7 +82,6 @@ class _CartScreenState extends State<CartScreen> {
     }
   }
 
-  // This function now returns a boolean indicating if details were changed.
   Future<bool> _promptToSaveChanges() async {
     final userProvider = Provider.of<UserProvider>(context, listen: false);
     final currentName =
@@ -131,30 +130,27 @@ class _CartScreenState extends State<CartScreen> {
           address: newAddress,
           phone: newPhone,
         ));
-        ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(content: Text('Information updated or saved')),
-        );
+
+        // FIX: Check if the widget is still mounted before showing SnackBar
+        if (mounted) {
+          ScaffoldMessenger.of(context).showSnackBar(
+            const SnackBar(content: Text('Information updated or saved')),
+          );
+        }
       }
-      return true; // Indicates that the dialog was shown
+      return true;
     }
-    return false; // Indicates that no details were changed
+    return false;
   }
 
-  // This is the new main function for the "Place Order" button.
   void _placeOrder(CartProvider cart) async {
-    // First, check if details were changed and show the dialog if needed.
     final bool dialogShown = await _promptToSaveChanges();
-
-    // If the dialog was shown, stop here. The user needs to click again.
     if (dialogShown) {
       return;
     }
-
-    // If no dialog was shown (details were not changed), proceed to WhatsApp.
     _sendOrderToWhatsApp(cart);
   }
 
-  // This function now ONLY handles sending the order and redirecting.
   void _sendOrderToWhatsApp(CartProvider cart) async {
     final name = _nameController.text.trim();
     final address = _addressController.text.trim();
