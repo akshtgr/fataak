@@ -1,6 +1,6 @@
 // lib/models/product.dart
 
-import 'package:cloud_firestore/cloud_firestore.dart'; // <-- ADD THIS LINE
+import 'package:cloud_firestore/cloud_firestore.dart';
 
 class Product {
   final String id;
@@ -36,19 +36,23 @@ class Product {
   factory Product.fromJson(Map<String, dynamic> json, String id) {
     return Product(
       id: id,
-      name: json['name'],
-      imageUrl: json['image_url'],
-      marketPrice: json['market_price'].toDouble(),
-      ourPrice: json['our_price'].toDouble(),
-      stock: json['stock'],
-      inStock: json['in_stock'],
-      unit: json['unit'],
-      category: json['category'],
-      isFeatured: json['is_featured'],
-      tags: List<String>.from(json['tags']),
-      // This part is now correct because you've imported Timestamp
-      createdAt: (json['created_at'] as Timestamp).toDate(),
-      updatedAt: (json['updated_at'] as Timestamp).toDate(),
+      name: json['name'] ?? 'No Name', // Default value
+      imageUrl: json['image_url'] ?? '', // Default value
+      marketPrice: (json['market_price'] ?? 0).toDouble(),
+      ourPrice: (json['our_price'] ?? 0).toDouble(),
+      stock: json['stock'] ?? 0,
+      inStock: json['in_stock'] ?? false,
+      unit: json['unit'] ?? 'N/A',
+      category: json['category'] ?? 'Uncategorized',
+      isFeatured: json['is_featured'] ?? false,
+      tags: List<String>.from(json['tags'] ?? []),
+      // Handles both Timestamp and String for dates
+      createdAt: (json['created_at'] is Timestamp)
+          ? (json['created_at'] as Timestamp).toDate()
+          : DateTime.tryParse(json['created_at'] ?? '') ?? DateTime.now(),
+      updatedAt: (json['updated_at'] is Timestamp)
+          ? (json['updated_at'] as Timestamp).toDate()
+          : DateTime.tryParse(json['updated_at'] ?? '') ?? DateTime.now(),
     );
   }
 }

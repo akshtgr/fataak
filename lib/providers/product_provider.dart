@@ -5,23 +5,26 @@ import '../models/product.dart';
 class ProductProvider with ChangeNotifier {
   List<Product> _products = [];
   final FirebaseFirestore _firestore = FirebaseFirestore.instance;
-  bool _isLoading = true; // Add loading state
+  bool _isLoading = true;
 
   List<Product> get products => [..._products];
-  bool get isLoading => _isLoading; // Getter for loading state
+  bool get isLoading => _isLoading;
 
   Future<void> fetchProducts() async {
-    // No need to set isLoading to true here, it's handled on init.
-    // Let's make refresh instant for the user.
     try {
-      final snapshot = await _firestore.collection('products').get();
+      final snapshot = await _firestore.collection('items').get();
+
+      // --- DEBUG LINE ADDED HERE ---
+      debugPrint('Found ${snapshot.docs.length} documents in the items collection.');
+
       _products = snapshot.docs
           .map((doc) => Product.fromJson(doc.data(), doc.id))
           .toList();
     } catch (error) {
       debugPrint('Error fetching products: $error');
+      //
     } finally {
-      _isLoading = false; // Set loading to false after fetching
+      _isLoading = false;
       notifyListeners();
     }
   }
