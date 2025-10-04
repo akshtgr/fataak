@@ -74,7 +74,8 @@ class _HomeScreenState extends State<HomeScreen> {
   }
 
   Future<List<Product>> _getRecentSearches() async {
-    final productProvider = Provider.of<ProductProvider>(context, listen: false);
+    final productProvider =
+    Provider.of<ProductProvider>(context, listen: false);
     final prefs = await SharedPreferences.getInstance();
     final recentSearchIds = prefs.getStringList(_recentSearchKey) ?? [];
     if (recentSearchIds.isEmpty) return [];
@@ -103,6 +104,7 @@ class _HomeScreenState extends State<HomeScreen> {
         .where((p) => p.id.isNotEmpty)
         .toList();
   }
+
   // --- END RECENT SEARCHES ---
 
   void _startSearch() {
@@ -134,7 +136,7 @@ class _HomeScreenState extends State<HomeScreen> {
           child: AnimatedOpacity(
             duration: const Duration(milliseconds: 350),
             opacity: _isSearching ? 1.0 : 0.0,
-            child: Container(color: const Color.fromRGBO(0, 0, 0, 0.6)),
+            child: Container(color: Colors.black.withOpacity(0.6)),
           ),
         ),
         AnimatedPositioned(
@@ -148,7 +150,8 @@ class _HomeScreenState extends State<HomeScreen> {
             child: Material(
               borderRadius: BorderRadius.circular(16.0),
               elevation: 8.0,
-              color: const Color(0xFFFAFAFA),
+              // Using theme's card color
+              color: Theme.of(context).cardColor,
               child: _buildSearchCardContent(),
             ),
           ),
@@ -158,7 +161,8 @@ class _HomeScreenState extends State<HomeScreen> {
   }
 
   Widget _buildSearchCardContent() {
-    final productProvider = Provider.of<ProductProvider>(context, listen: false);
+    final productProvider =
+    Provider.of<ProductProvider>(context, listen: false);
     final suggestionList = _searchController.text.isEmpty
         ? []
         : productProvider.products.where((product) {
@@ -188,7 +192,7 @@ class _HomeScreenState extends State<HomeScreen> {
                 child: Row(
                   children: [
                     IconButton(
-                      icon: const Icon(Icons.arrow_back, color: Colors.grey),
+                      icon: const Icon(Icons.arrow_back),
                       onPressed: _stopSearch,
                     ),
                     Expanded(
@@ -212,14 +216,14 @@ class _HomeScreenState extends State<HomeScreen> {
                     backgroundColor:
                     WidgetStateProperty.resolveWith<Color?>((states) {
                       if (states.contains(WidgetState.selected)) {
-                        return const Color(0xFFE0E0E0);
+                        return Theme.of(context).colorScheme.primary.withOpacity(0.2);
                       }
                       return Colors.transparent;
                     }),
                     shape: WidgetStateProperty.all(RoundedRectangleBorder(
                         borderRadius: BorderRadius.circular(20.0))),
                     side: WidgetStateProperty.all(
-                        const BorderSide(color: Colors.grey, width: 1.0)),
+                        BorderSide(color: Colors.grey.withOpacity(0.5), width: 1.0)),
                   ),
                   showSelectedIcon: false,
                   segments: const [
@@ -308,7 +312,7 @@ class _HomeScreenState extends State<HomeScreen> {
                       _stopSearch();
                     },
                     trailing: IconButton(
-                      icon: const Icon(Icons.clear, color: Colors.grey),
+                      icon: const Icon(Icons.clear),
                       onPressed: () => _removeRecentSearch(product.id),
                     ),
                   );
@@ -322,15 +326,17 @@ class _HomeScreenState extends State<HomeScreen> {
   }
 
   ListTile _buildProductListItem(
-      {required Product product, required VoidCallback onTap, Widget? trailing}) {
+      {required Product product,
+        required VoidCallback onTap,
+        Widget? trailing}) {
     return ListTile(
       onTap: onTap,
       leading: CircleAvatar(
-        backgroundColor: Colors.grey[200],
+        backgroundColor: Colors.grey.withOpacity(0.2),
         backgroundImage: CachedNetworkImageProvider(product.imageUrl),
       ),
-      title:
-      Text(product.name, style: const TextStyle(fontWeight: FontWeight.bold)),
+      title: Text(product.name,
+          style: const TextStyle(fontWeight: FontWeight.bold)),
       subtitle: Text(product.category),
       trailing: trailing,
     );
@@ -389,22 +395,20 @@ class _HomeScreenState extends State<HomeScreen> {
     sortedProducts.where((p) => !p.inStock).toList();
     sortedProducts = [...inStockProducts, ...outOfStockProducts];
 
-    // --- MODIFICATION START ---
-    // The childAspectRatio has been adjusted to make the cards taller,
-    // providing more space for content and fixing the overflow.
     const gridDelegate = SliverGridDelegateWithFixedCrossAxisCount(
         crossAxisCount: 2,
         childAspectRatio: 3 / 5,
         crossAxisSpacing: 16,
         mainAxisSpacing: 16);
-    // --- MODIFICATION END ---
 
     const Color orangeColor = Color(0xFFF07706);
     const Color greenColor = Color(0xFF1DAD03);
     final isVegOrFruitSelected =
         _selectedFilter == 'Vegetables' || _selectedFilter == 'Fruits';
-    final segmentSelectedColor = isVegOrFruitSelected ? greenColor : orangeColor;
-    final segmentOutlineColor = isVegOrFruitSelected ? greenColor : orangeColor;
+    final segmentSelectedColor =
+    isVegOrFruitSelected ? greenColor : orangeColor;
+    final segmentOutlineColor =
+    isVegOrFruitSelected ? greenColor : orangeColor;
     final isSorted = _selectedSort != SortOptions.defaultSort;
     final fabBackgroundColor = isSorted ? greenColor : Colors.transparent;
     final fabIconColor = isSorted ? Colors.white : orangeColor;
@@ -420,7 +424,8 @@ class _HomeScreenState extends State<HomeScreen> {
         if (states.contains(WidgetState.selected)) {
           return Colors.white;
         }
-        return Colors.black54;
+        // Use theme color for unselected text
+        return Theme.of(context).colorScheme.onSurface.withOpacity(0.7);
       }),
       side: WidgetStateProperty.all(
           BorderSide(color: segmentOutlineColor, width: 1.5)),
@@ -433,113 +438,112 @@ class _HomeScreenState extends State<HomeScreen> {
       absorbing: _isSearching,
       child: RefreshIndicator(
         onRefresh: _refreshProducts,
-        child: Container(
-          color: const Color(0xFFFAFAFA),
-          child: SingleChildScrollView(
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Padding(
-                  padding: const EdgeInsets.fromLTRB(16.0, 16.0, 16.0, 0),
-                  child: Row(
-                    children: [
-                      Expanded(
-                        child: SegmentedButton<String>(
-                          showSelectedIcon: false,
-                          segments: const [
-                            ButtonSegment(value: 'All', label: Text('All')),
-                            ButtonSegment(
-                                value: 'Vegetables', label: Text('Vegetables')),
-                            ButtonSegment(
-                                value: 'Fruits', label: Text('Fruits')),
-                          ],
-                          selected: {_selectedFilter},
-                          onSelectionChanged: (Set<String> newSelection) {
-                            setState(() {
-                              _selectedFilter = newSelection.first;
-                            });
-                          },
-                          style: segmentedButtonStyle,
-                        ),
-                      ),
-                      const SizedBox(width: 12),
-                      PopupMenuButton<SortOptions>(
-                        onSelected: (SortOptions result) {
+        // THIS IS THE FIX: The Container with the hardcoded color is removed.
+        child: SingleChildScrollView(
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Padding(
+                padding: const EdgeInsets.fromLTRB(16.0, 16.0, 16.0, 0),
+                child: Row(
+                  children: [
+                    Expanded(
+                      child: SegmentedButton<String>(
+                        showSelectedIcon: false,
+                        segments: const [
+                          ButtonSegment(value: 'All', label: Text('All')),
+                          ButtonSegment(
+                              value: 'Vegetables', label: Text('Vegetables')),
+                          ButtonSegment(value: 'Fruits', label: Text('Fruits')),
+                        ],
+                        selected: {_selectedFilter},
+                        onSelectionChanged: (Set<String> newSelection) {
                           setState(() {
-                            _selectedSort = result;
+                            _selectedFilter = newSelection.first;
                           });
                         },
-                        shape: RoundedRectangleBorder(
-                            borderRadius: BorderRadius.circular(12.0)),
-                        color: Colors.white,
-                        offset: const Offset(0, 50),
-                        itemBuilder: (BuildContext context) =>
-                        <PopupMenuEntry<SortOptions>>[
-                          _buildSortMenuItem(SortOptions.defaultSort, 'Default'),
-                          _buildSortMenuItem(SortOptions.nameAZ, 'Name: A to Z'),
-                          _buildSortMenuItem(SortOptions.nameZA, 'Name: Z to A'),
-                          _buildSortMenuItem(
-                              SortOptions.priceLowHigh, 'Price: Low to High'),
-                          _buildSortMenuItem(
-                              SortOptions.priceHighLow, 'Price: High to Low'),
-                        ],
-                        child: Container(
-                          padding: const EdgeInsets.all(7),
-                          decoration: BoxDecoration(
-                              color: fabBackgroundColor,
-                              shape: BoxShape.circle,
-                              border: Border.all(
-                                  color: fabOutlineColor, width: 1.5)),
-                          child: Icon(
-                            Icons.sort,
-                            color: fabIconColor,
-                          ),
+                        style: segmentedButtonStyle,
+                      ),
+                    ),
+                    const SizedBox(width: 12),
+                    PopupMenuButton<SortOptions>(
+                      onSelected: (SortOptions result) {
+                        setState(() {
+                          _selectedSort = result;
+                        });
+                      },
+                      shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(12.0)),
+                      // Using theme's popup menu color
+                      // color: Colors.white,
+                      offset: const Offset(0, 50),
+                      itemBuilder: (BuildContext context) =>
+                      <PopupMenuEntry<SortOptions>>[
+                        _buildSortMenuItem(SortOptions.defaultSort, 'Default'),
+                        _buildSortMenuItem(SortOptions.nameAZ, 'Name: A to Z'),
+                        _buildSortMenuItem(SortOptions.nameZA, 'Name: Z to A'),
+                        _buildSortMenuItem(
+                            SortOptions.priceLowHigh, 'Price: Low to High'),
+                        _buildSortMenuItem(
+                            SortOptions.priceHighLow, 'Price: High to Low'),
+                      ],
+                      child: Container(
+                        padding: const EdgeInsets.all(7),
+                        decoration: BoxDecoration(
+                            color: fabBackgroundColor,
+                            shape: BoxShape.circle,
+                            border:
+                            Border.all(color: fabOutlineColor, width: 1.5)),
+                        child: Icon(
+                          Icons.sort,
+                          color: fabIconColor,
                         ),
                       ),
-                    ],
-                  ),
+                    ),
+                  ],
                 ),
-                Padding(
-                  padding: const EdgeInsets.all(16.0),
-                  child: Consumer<ProductProvider>(
-                    builder: (context, provider, child) {
-                      if (provider.isLoading) {
-                        return GridView.builder(
+              ),
+              Padding(
+                padding: const EdgeInsets.all(16.0),
+                child: Consumer<ProductProvider>(
+                  builder: (context, provider, child) {
+                    if (provider.isLoading) {
+                      return GridView.builder(
+                          shrinkWrap: true,
+                          physics: const NeverScrollableScrollPhysics(),
+                          itemCount: 6,
+                          gridDelegate: gridDelegate,
+                          itemBuilder: (ctx, i) => const SkeletonLoader());
+                    } else if (sortedProducts.isEmpty) {
+                      return const Center(
+                          child: Padding(
+                              padding: EdgeInsets.only(top: 40.0),
+                              child: Text('No products found.')));
+                    } else {
+                      return AnimatedSwitcher(
+                        duration: const Duration(milliseconds: 300),
+                        child: GridView.builder(
+                            key: ValueKey('$_selectedFilter-$_selectedSort'),
                             shrinkWrap: true,
                             physics: const NeverScrollableScrollPhysics(),
-                            itemCount: 6,
+                            itemCount: sortedProducts.length,
                             gridDelegate: gridDelegate,
-                            itemBuilder: (ctx, i) => const SkeletonLoader());
-                      } else if (sortedProducts.isEmpty) {
-                        return const Center(
-                            child: Padding(
-                                padding: EdgeInsets.only(top: 40.0),
-                                child: Text('No products found.')));
-                      } else {
-                        return AnimatedSwitcher(
-                          duration: const Duration(milliseconds: 300),
-                          child: GridView.builder(
-                              key: ValueKey('$_selectedFilter-$_selectedSort'),
-                              shrinkWrap: true,
-                              physics: const NeverScrollableScrollPhysics(),
-                              itemCount: sortedProducts.length,
-                              gridDelegate: gridDelegate,
-                              itemBuilder: (ctx, i) =>
-                                  ProductCard(product: sortedProducts[i])),
-                        );
-                      }
-                    },
-                  ),
+                            itemBuilder: (ctx, i) =>
+                                ProductCard(product: sortedProducts[i])),
+                      );
+                    }
+                  },
                 ),
-              ],
-            ),
+              ),
+            ],
           ),
         ),
       ),
     );
   }
 
-  PopupMenuItem<SortOptions> _buildSortMenuItem(SortOptions option, String title) {
+  PopupMenuItem<SortOptions> _buildSortMenuItem(
+      SortOptions option, String title) {
     return PopupMenuItem<SortOptions>(
       value: option,
       child: Row(
@@ -557,7 +561,7 @@ class _HomeScreenState extends State<HomeScreen> {
   Widget build(BuildContext context) {
     return PopScope(
       canPop: !_isSearching,
-      onPopInvoked: (bool didPop) {
+      onPopInvokedWithResult: (bool didPop, _) {
         if (didPop) return;
         if (_isSearching) {
           _stopSearch();

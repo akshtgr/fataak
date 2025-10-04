@@ -1,3 +1,4 @@
+import 'package:fataak/providers/theme_provider.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import '../models/user_data.dart';
@@ -77,6 +78,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
 
   @override
   Widget build(BuildContext context) {
+    final themeProvider = Provider.of<ThemeProvider>(context);
     Widget formFields = Column(
       crossAxisAlignment: CrossAxisAlignment.stretch,
       children: [
@@ -148,6 +150,16 @@ class _ProfileScreenState extends State<ProfileScreen> {
     return Scaffold(
       appBar: AppBar(
         title: const Text('Your Profile'),
+        actions: [
+          IconButton(
+            onPressed: () {
+              themeProvider.setDarkTheme(!themeProvider.getIsDarkTheme);
+            },
+            icon: Icon(themeProvider.getIsDarkTheme
+                ? Icons.dark_mode
+                : Icons.light_mode),
+          )
+        ],
       ),
       body: SingleChildScrollView(
         padding: const EdgeInsets.all(16.0),

@@ -243,7 +243,7 @@ class _CartScreenState extends State<CartScreen> {
                 final product = cart.items.values.elementAt(i);
                 final quantity = cart.quantities[productId] ?? 0;
                 return Card(
-                  color: const Color(0xFFFAFAFA),
+                  // Removed hardcoded color to use theme's cardColor
                   elevation: 0,
                   margin: const EdgeInsets.symmetric(vertical: 4),
                   child: ListTile(
@@ -283,44 +283,33 @@ class _CartScreenState extends State<CartScreen> {
           Container(
             padding: const EdgeInsets.all(12),
             decoration: BoxDecoration(
-              color: const Color(0xFFFAFAFA),
-              border:
-              Border(top: BorderSide(color: Colors.grey.shade200, width: 1)),
+              // Using theme color instead of hardcoded value
+              color: Theme.of(context).scaffoldBackgroundColor,
+              border: Border(
+                  top: BorderSide(color: Colors.grey.withOpacity(0.2), width: 1)),
             ),
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.stretch,
               children: [
                 TextField(
                   controller: _nameController,
-                  decoration: InputDecoration(
+                  decoration: const InputDecoration(
                     labelText: 'Your Name',
-                    border: OutlineInputBorder(
-                        borderRadius: BorderRadius.circular(8)),
-                    contentPadding:
-                    const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
                   ),
                 ),
                 const SizedBox(height: 12),
                 TextField(
                   controller: _addressController,
-                  decoration: InputDecoration(
+                  decoration: const InputDecoration(
                     labelText: 'Delivery Address',
-                    border: OutlineInputBorder(
-                        borderRadius: BorderRadius.circular(8)),
-                    contentPadding:
-                    const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
                   ),
                   maxLines: 2,
                 ),
                 const SizedBox(height: 12),
                 TextField(
                   controller: _phoneController,
-                  decoration: InputDecoration(
+                  decoration: const InputDecoration(
                     labelText: 'Your Phone Number',
-                    border: OutlineInputBorder(
-                        borderRadius: BorderRadius.circular(8)),
-                    contentPadding:
-                    const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
                   ),
                   keyboardType: TextInputType.phone,
                 ),

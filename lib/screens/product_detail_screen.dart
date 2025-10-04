@@ -46,9 +46,11 @@ class _ProductDetailScreenState extends State<ProductDetailScreen> {
   }
 
   Widget _buildSkeleton() {
+    final isDarkMode = Theme.of(context).brightness == Brightness.dark;
+
     return Shimmer.fromColors(
-      baseColor: Colors.grey[200]!,
-      highlightColor: Colors.grey[100]!,
+      baseColor: isDarkMode ? Colors.grey[850]! : Colors.grey[200]!,
+      highlightColor: isDarkMode ? Colors.grey[800]! : Colors.grey[100]!,
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
@@ -101,7 +103,7 @@ class _ProductDetailScreenState extends State<ProductDetailScreen> {
         const SizedBox(height: 10),
         Row(
           children: [
-            Text('₹${widget.product.ourPrice.toStringAsFixed(0)}', style: const TextStyle(color: Colors.black, fontWeight: FontWeight.bold, fontSize: 22)),
+            Text('₹${widget.product.ourPrice.toStringAsFixed(0)}', style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 22)),
             const SizedBox(width: 12),
             Text('₹${widget.product.marketPrice.toStringAsFixed(0)}', style: const TextStyle(color: Colors.red, decoration: TextDecoration.lineThrough, fontSize: 18)),
           ],

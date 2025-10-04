@@ -26,7 +26,8 @@ class ProductCard extends StatelessWidget {
       },
       child: Container(
         decoration: BoxDecoration(
-          color: const Color(0xFFFAFAFA),
+          // Using theme's card color instead of a hardcoded value
+          color: Theme.of(context).cardColor,
           borderRadius: BorderRadius.circular(12.0),
         ),
         child: Padding(
@@ -71,7 +72,6 @@ class ProductCard extends StatelessWidget {
                     TextSpan(
                       text: '₹${product.ourPrice.toStringAsFixed(0)}',
                       style: const TextStyle(
-                        color: Colors.black,
                         fontWeight: FontWeight.bold,
                         fontSize: 16,
                       ),
@@ -186,7 +186,7 @@ class ProductCard extends StatelessWidget {
                         padding: const EdgeInsets.symmetric(
                             horizontal: 10, vertical: 5),
                         decoration: BoxDecoration(
-                          color: Colors.grey.shade200,
+                          color: Colors.grey.withOpacity(0.2),
                           borderRadius: BorderRadius.circular(20),
                         ),
                         child: Text(

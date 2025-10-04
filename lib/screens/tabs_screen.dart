@@ -38,7 +38,7 @@ class _TabsScreenState extends State<TabsScreen> {
   Widget build(BuildContext context) {
     return PopScope(
       canPop: _selectedPageIndex == 0,
-      onPopInvoked: (bool didPop) {
+      onPopInvokedWithResult: (bool didPop, _) {
         if (didPop) {
           return;
         }
@@ -52,9 +52,7 @@ class _TabsScreenState extends State<TabsScreen> {
           onTap: _selectPage,
           currentIndex: _selectedPageIndex,
           type: BottomNavigationBarType.fixed,
-          backgroundColor: const Color(0xFFFAFAFA),
-          selectedItemColor: Colors.green,
-          unselectedItemColor: Colors.grey,
+          // Removed hardcoded backgroundColor to use the theme
           items: [
             const BottomNavigationBarItem(
               icon: Icon(Icons.home_outlined),
