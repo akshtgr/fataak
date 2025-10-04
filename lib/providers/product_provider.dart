@@ -20,6 +20,12 @@ class ProductProvider with ChangeNotifier {
       _products = snapshot.docs
           .map((doc) => Product.fromJson(doc.data(), doc.id))
           .toList();
+
+      // --- MODIFICATION START ---
+      // Sort products by stock in descending order by default
+      _products.sort((a, b) => b.stock.compareTo(a.stock));
+      // --- MODIFICATION END ---
+
     } catch (error) {
       debugPrint('Error fetching products: $error');
       //

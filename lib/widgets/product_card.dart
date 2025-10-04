@@ -53,14 +53,17 @@ class ProductCard extends StatelessWidget {
               const SizedBox(height: 8),
               // --- MODIFICATION START ---
               // The layout is now more flexible to accommodate long product names.
-              Text(
-                product.name,
-                style: const TextStyle(
-                    fontWeight: FontWeight.bold, fontSize: 15),
-                maxLines: 2,
-                overflow: TextOverflow.ellipsis,
+              Container(
+                height: 42, // Allocate space for two lines of text
+                alignment: Alignment.topLeft,
+                child: Text(
+                  product.name,
+                  style: const TextStyle(
+                      fontWeight: FontWeight.bold, fontSize: 15),
+                  maxLines: 2,
+                  overflow: TextOverflow.ellipsis,
+                ),
               ),
-              const Spacer(), // Pushes the following content to the bottom
               RichText(
                 text: TextSpan(
                   style: DefaultTextStyle.of(context).style,
