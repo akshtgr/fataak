@@ -16,6 +16,9 @@ class Product {
   final List<String> tags;
   final DateTime createdAt;
   final DateTime updatedAt;
+  final String priceUnit;
+  final String stockUnit;
+  final String stockLabel;
 
   Product({
     required this.id,
@@ -31,28 +34,36 @@ class Product {
     required this.tags,
     required this.createdAt,
     required this.updatedAt,
+    required this.priceUnit,
+    required this.stockUnit,
+    required this.stockLabel,
   });
 
   factory Product.fromJson(Map<String, dynamic> json, String id) {
     return Product(
       id: id,
-      name: json['name'] ?? 'No Name', // Default value
-      imageUrl: json['image_url'] ?? '', // Default value
+      // --- MODIFICATION START ---
+      // The .trim() method has been added to all string fields to remove whitespace.
+      name: (json['name'] ?? 'No Name').trim(),
+      imageUrl: (json['image_url'] ?? '').trim(),
       marketPrice: (json['market_price'] ?? 0).toDouble(),
       ourPrice: (json['our_price'] ?? 0).toDouble(),
       stock: json['stock'] ?? 0,
       inStock: json['in_stock'] ?? false,
-      unit: json['unit'] ?? 'N/A',
-      category: json['category'] ?? 'Uncategorized',
+      unit: (json['unit'] ?? 'N/A').trim(),
+      category: (json['category'] ?? 'Uncategorized').trim(),
       isFeatured: json['is_featured'] ?? false,
       tags: List<String>.from(json['tags'] ?? []),
-      // Handles both Timestamp and String for dates
       createdAt: (json['created_at'] is Timestamp)
           ? (json['created_at'] as Timestamp).toDate()
           : DateTime.tryParse(json['created_at'] ?? '') ?? DateTime.now(),
       updatedAt: (json['updated_at'] is Timestamp)
           ? (json['updated_at'] as Timestamp).toDate()
           : DateTime.tryParse(json['updated_at'] ?? '') ?? DateTime.now(),
+      priceUnit: (json['price_unit'] ?? '').trim(),
+      stockUnit: (json['stock_unit'] ?? '').trim(),
+      stockLabel: (json['stock_label'] ?? '').trim(),
+      // --- MODIFICATION END ---
     );
   }
 }

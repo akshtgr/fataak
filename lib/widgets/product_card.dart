@@ -34,82 +34,94 @@ class ProductCard extends StatelessWidget {
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              Expanded(
-                child: Center(
-                  child: ClipRRect(
-                    borderRadius: BorderRadius.circular(12.0),
-                    child: CachedNetworkImage(
-                      imageUrl: product.imageUrl,
-                      placeholder: (context, url) => Container(color: Colors.grey[200]),
-                      errorWidget: (context, url, error) => const Center(
-                        child: Icon(Icons.image_not_supported, color: Colors.grey, size: 40),
-                      ),
-                      fit: BoxFit.contain,
-                      width: double.infinity,
+              AspectRatio(
+                aspectRatio: 1.0,
+                child: ClipRRect(
+                  borderRadius: BorderRadius.circular(12.0),
+                  child: CachedNetworkImage(
+                    imageUrl: product.imageUrl,
+                    placeholder: (context, url) =>
+                        Container(color: Colors.grey[200]),
+                    errorWidget: (context, url, error) => const Center(
+                      child: Icon(Icons.image_not_supported,
+                          color: Colors.grey, size: 40),
                     ),
+                    fit: BoxFit.cover,
                   ),
                 ),
-              ),
-              const SizedBox(height: 10),
-              Container(
-                height: 42,
-                alignment: Alignment.topLeft,
-                child: Text(
-                  product.name,
-                  style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 15),
-                  maxLines: 2,
-                ),
-              ),
-              const SizedBox(height: 4),
-              Text(
-                'Stock: ${product.stock} ${product.unit}',
-                style: TextStyle(color: Colors.grey.shade600, fontSize: 13),
               ),
               const SizedBox(height: 8),
+              // --- MODIFICATION START ---
+              // The layout is now more flexible to accommodate long product names.
+              Text(
+                product.name,
+                style: const TextStyle(
+                    fontWeight: FontWeight.bold, fontSize: 15),
+                maxLines: 2,
+                overflow: TextOverflow.ellipsis,
+              ),
+              const Spacer(), // Pushes the following content to the bottom
+              RichText(
+                text: TextSpan(
+                  style: DefaultTextStyle.of(context).style,
+                  children: <TextSpan>[
+                    TextSpan(
+                      text: '₹${product.ourPrice.toStringAsFixed(0)}',
+                      style: const TextStyle(
+                        color: Colors.black,
+                        fontWeight: FontWeight.bold,
+                        fontSize: 16,
+                      ),
+                    ),
+                    TextSpan(
+                      text: product.priceUnit,
+                      style: TextStyle(
+                        color: Colors.grey.shade600,
+                        fontSize: 12,
+                      ),
+                    ),
+                    TextSpan(
+                      text: ' • ',
+                      style: TextStyle(
+                        color: Colors.grey.shade600,
+                        fontSize: 14,
+                      ),
+                    ),
+                    TextSpan(
+                      text: '₹${product.marketPrice.toStringAsFixed(0)}',
+                      style: const TextStyle(
+                        color: Colors.red,
+                        decoration: TextDecoration.lineThrough,
+                        fontSize: 14,
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+              const SizedBox(height: 8),
+              // --- MODIFICATION END ---
               Row(
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                crossAxisAlignment: CrossAxisAlignment.center,
+                mainAxisAlignment: MainAxisAlignment.start,
                 children: [
-                  Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Text(
-                        '₹${product.ourPrice.toStringAsFixed(0)}',
-                        style: const TextStyle(
-                          color: Colors.black,
-                          fontWeight: FontWeight.bold,
-                          fontSize: 18,
-                        ),
-                      ),
-                      Text(
-                        '₹${product.marketPrice.toStringAsFixed(0)}',
-                        style: const TextStyle(
-                          color: Colors.red,
-                          decoration: TextDecoration.lineThrough,
-                          fontSize: 14,
-                        ),
-                      ),
-                    ],
-                  ),
-
-                  // --- THE FIX IS HERE ---
-                  // This SizedBox now ensures a consistent height for both the button and the stepper.
                   SizedBox(
-                    height: 36, // Set a fixed height
+                    height: 36,
                     child: AnimatedSwitcher(
                       duration: const Duration(milliseconds: 200),
                       child: (product.inStock && product.stock > 0)
                           ? (quantity == 0
-                      // The "Add" button
                           ? OutlinedButton.icon(
                         key: const ValueKey('addButton'),
                         onPressed: () {
                           cart.addItem(product);
-                          ScaffoldMessenger.of(context).hideCurrentSnackBar();
-                          ScaffoldMessenger.of(context).showSnackBar(
+                          ScaffoldMessenger.of(context)
+                              .hideCurrentSnackBar();
+                          ScaffoldMessenger.of(context)
+                              .showSnackBar(
                             SnackBar(
-                              content: Text('${product.name} added to cart!'),
-                              duration: const Duration(seconds: 2),
+                              content: Text(
+                                  '${product.name} added to cart!'),
+                              duration:
+                              const Duration(seconds: 2),
                             ),
                           );
                         },
@@ -117,48 +129,68 @@ class ProductCard extends StatelessWidget {
                         label: const Text('Add'),
                         style: OutlinedButton.styleFrom(
                           foregroundColor: customGreen,
-                          side: const BorderSide(color: customGreen, width: 1.5),
+                          side: const BorderSide(
+                              color: customGreen, width: 1.5),
                           shape: const StadiumBorder(),
                         ),
                       )
-                      // The stepper
                           : Container(
                         key: const ValueKey('stepper'),
                         decoration: BoxDecoration(
                           color: customGreen,
-                          borderRadius: BorderRadius.circular(20),
+                          borderRadius:
+                          BorderRadius.circular(20),
                         ),
                         child: Row(
                           children: [
                             IconButton(
-                              icon: const Icon(Icons.remove, color: Colors.white, size: 16),
-                              onPressed: () => cart.removeSingleItem(product.id),
-                              constraints: const BoxConstraints(),
-                              padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+                              icon: const Icon(Icons.remove,
+                                  color: Colors.white,
+                                  size: 16),
+                              onPressed: () => cart
+                                  .removeSingleItem(product.id),
+                              constraints:
+                              const BoxConstraints(),
+                              padding: const EdgeInsets
+                                  .symmetric(
+                                  horizontal: 8,
+                                  vertical: 4),
                             ),
                             Text(
                               quantity.toString(),
-                              style: const TextStyle(color: Colors.white, fontWeight: FontWeight.bold, fontSize: 16),
+                              style: const TextStyle(
+                                  color: Colors.white,
+                                  fontWeight: FontWeight.bold,
+                                  fontSize: 16),
                             ),
                             IconButton(
-                              icon: const Icon(Icons.add, color: Colors.white, size: 16),
-                              onPressed: () => cart.addItem(product),
-                              constraints: const BoxConstraints(),
-                              padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+                              icon: const Icon(Icons.add,
+                                  color: Colors.white,
+                                  size: 16),
+                              onPressed: () =>
+                                  cart.addItem(product),
+                              constraints:
+                              const BoxConstraints(),
+                              padding: const EdgeInsets
+                                  .symmetric(
+                                  horizontal: 8,
+                                  vertical: 4),
                             ),
                           ],
                         ),
                       ))
-                      // Out of stock button
                           : Container(
-                        padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 5),
+                        padding: const EdgeInsets.symmetric(
+                            horizontal: 10, vertical: 5),
                         decoration: BoxDecoration(
                           color: Colors.grey.shade200,
                           borderRadius: BorderRadius.circular(20),
                         ),
                         child: Text(
                           'Out of Stock',
-                          style: TextStyle(color: Colors.grey.shade600, fontSize: 12),
+                          style: TextStyle(
+                              color: Colors.grey.shade600,
+                              fontSize: 12),
                         ),
                       ),
                     ),

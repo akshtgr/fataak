@@ -38,7 +38,6 @@ class _ProductDetailScreenState extends State<ProductDetailScreen> {
         title: Text(widget.product.name),
         scrolledUnderElevation: 0,
       ),
-      // The body is now a SingleChildScrollView to prevent all overflows
       body: SingleChildScrollView(
         padding: const EdgeInsets.all(16.0),
         child: _isLoading ? _buildSkeleton() : _buildProductDetails(),
@@ -46,7 +45,6 @@ class _ProductDetailScreenState extends State<ProductDetailScreen> {
     );
   }
 
-  // Skeleton view for loading state
   Widget _buildSkeleton() {
     return Shimmer.fromColors(
       baseColor: Colors.grey[200]!,
@@ -54,9 +52,8 @@ class _ProductDetailScreenState extends State<ProductDetailScreen> {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          // Skeleton for the square image
           Container(
-            height: MediaQuery.of(context).size.width - 32, // Square shape
+            height: MediaQuery.of(context).size.width - 32,
             width: double.infinity,
             decoration: BoxDecoration(
                 color: Colors.white,
@@ -64,14 +61,12 @@ class _ProductDetailScreenState extends State<ProductDetailScreen> {
             ),
           ),
           const SizedBox(height: 20),
-          // Skeletons for the text
           Container(height: 24, width: 200, color: Colors.white),
           const SizedBox(height: 10),
           Container(height: 20, width: 150, color: Colors.white),
           const SizedBox(height: 10),
           Container(height: 20, width: 100, color: Colors.white),
           const SizedBox(height: 20),
-          // Skeleton for the button
           Container(height: 50, width: double.infinity, decoration: BoxDecoration(
               color: Colors.white,
               borderRadius: BorderRadius.circular(8.0)
@@ -81,7 +76,6 @@ class _ProductDetailScreenState extends State<ProductDetailScreen> {
     );
   }
 
-  // The main widget for displaying product details
   Widget _buildProductDetails() {
     final cart = Provider.of<CartProvider>(context, listen: false);
 
@@ -91,7 +85,7 @@ class _ProductDetailScreenState extends State<ProductDetailScreen> {
         ClipRRect(
           borderRadius: BorderRadius.circular(12.0),
           child: AspectRatio(
-            aspectRatio: 1 / 1, // Square container
+            aspectRatio: 1 / 1,
             child: CachedNetworkImage(
               imageUrl: widget.product.imageUrl,
               placeholder: (context, url) => Container(color: Colors.grey[200]),
@@ -113,7 +107,13 @@ class _ProductDetailScreenState extends State<ProductDetailScreen> {
           ],
         ),
         const SizedBox(height: 10),
-        Text('Stock: ${widget.product.stock} ${widget.product.unit}', style: TextStyle(color: Colors.grey.shade600, fontSize: 16)),
+        // --- MODIFICATION START ---
+        // The stock information has been added here.
+        Text(
+          'Stock: ${widget.product.stock} ${widget.product.stockUnit} ${widget.product.stockLabel}',
+          style: TextStyle(color: Colors.grey.shade600, fontSize: 16),
+        ),
+        // --- MODIFICATION END ---
         const SizedBox(height: 20),
         SizedBox(
           width: double.infinity,
